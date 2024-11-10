@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Store</title>
+    <style>
+        /* CSS Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+
+        header {
+            background-color: #4CAF50;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .container {
+            width: 90%;
+            margin: auto;
+            max-width: 1200px;
+        }
+
+        h2 {
+            color: #333;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .product-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .product {
+            border: 1px solid #ddd;
+            padding: 15px;
+            width: 220px;
+            text-align: center;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .product:hover {
+            transform: scale(1.05);
+        }
+
+        .product img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        /* Popup Styles */
+        .popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .popup-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            width: 300px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .popup-content img {
+            width: 100%;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .popup-content h3 {
+            margin: 0;
+            font-size: 22px;
+            color: #333;
+        }
+
+        .popup-content p {
+            color: #666;
+            font-size: 16px;
+            margin: 5px 0;
+        }
+
+        .popup-content .close-icon {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: #f44336;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .popup-content button {
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+            margin-top: 10px;
+            margin-bottom: 5px;
+            transition: background-color 0.3s;
+            width: 100%;
+        }
+
+        .popup-content button:hover {
+            background-color: #45a049;
+        }
+
+        .popup-content .whatsapp-btn {
+            background-color: #25D366;
+            margin-top: 10px;
+        }
+
+        .popup-content .telegram-btn {
+            background-color: #0088cc;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HTML Content -->
+    <header>
+        Simple Store
+    </header>
+
+    <div class="container">
+        <main id="store">
+            <h2>Produk Kami</h2>
+            <div class="product-list">
+                <div class="product" onclick="showProductDetail('Produk 1', 'Rp100,000', 'Deskripsi produk 1', 'https://via.placeholder.com/150', 100000)">
+                    <img src="https://via.placeholder.com/150" alt="Produk 1">
+                    <h3>Produk 1</h3>
+                    <p>Rp100,000</p>
+                </div>
+                <div class="product" onclick="showProductDetail('Produk 2', 'Rp200,000', 'Deskripsi produk 2', 'https://via.placeholder.com/150', 200000)">
+                    <img src="https://via.placeholder.com/150" alt="Produk 2">
+                    <h3>Produk 2</h3>
+                    <p>Rp200,000</p>
+                </div>
+                <div class="product" onclick="showProductDetail('Produk 3', 'Rp300,000', 'Deskripsi produk 3', 'https://via.placeholder.com/150', 300000)">
+                    <img src="https://via.placeholder.com/150" alt="Produk 3">
+                    <h3>Produk 3</h3>
+                    <p>Rp300,000</p>
+                </div>
+                <div class="product" onclick="showProductDetail('Produk 4', 'Rp400,000', 'Deskripsi produk 4', 'https://via.placeholder.com/150', 400000)">
+                    <img src="https://via.placeholder.com/150" alt="Produk 3">
+                    <h3>Produk 4</h3>
+                    <p>Rp400,000</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Popup for Product Details -->
+    <div id="popup" class="popup">
+        <div class="popup-content">
+            <span class="close-icon" onclick="closePopup()">&#10005;</span>
+            <img id="popup-product-image" src="" alt="Product Image">
+            <h3 id="popup-product-name"></h3>
+            <p id="popup-product-price"></p>
+            <p id="popup-product-description"></p>
+            <button class="whatsapp-btn" onclick="checkoutWhatsApp()">Pesan via WhatsApp</button>
+            <button class="telegram-btn" onclick="checkoutTelegram()">Pesan via Telegram</button>
+        </div>
+    </div>
+
+    <script>
+        let selectedProduct = {};
+
+        function showProductDetail(name, price, description, imageUrl, priceValue) {
+            selectedProduct = { name, priceValue };
+
+            document.getElementById('popup-product-name').textContent = name;
+            document.getElementById('popup-product-price').textContent = price;
+            document.getElementById('popup-product-description').textContent = description;
+            document.getElementById('popup-product-image').src = imageUrl;
+
+            document.getElementById('popup').style.display = 'flex';
+        }
+
+        function closePopup() {
+            document.getElementById('popup').style.display = 'none';
+        }
+
+        function checkoutWhatsApp() {
+            const phoneNumber = "628123456789";  // Ganti dengan nomor WhatsApp tujuan
+            const message = `Saya ingin membeli ${selectedProduct.name} dengan harga Rp${selectedProduct.priceValue}`;
+            const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+            window.open(url, "_blank");
+        }
+
+        function checkoutTelegram() {
+            const botUsername = "YourBotUsername";  // Ganti dengan username bot Telegram Anda
+            const message = `Saya ingin membeli ${selectedProduct.name} dengan harga Rp${selectedProduct.priceValue}`;
+            const url = `https://t.me/${botUsername}?text=${encodeURIComponent(message)}`;
+            window.open(url, "_blank");
+        }
+    </script>
+
+</body>
+</html>
+  
